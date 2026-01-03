@@ -36,13 +36,20 @@ def get_db():
 # 뉴스를 긁어와서 DB에 저장하는 API
 @app.post("/news/crawl")
 def crawl_news(keyword: str = "에듀테크", db: Session = Depends(get_db)):
-    # 1. 크롤러 가동
+    # 크롤러 가동
     news_list = crawler.get_news_data(keyword)
+    news_list.reverse()
     
     saved_count = 0
     for news in news_list:
-        # 2. DB 저장 (crud.py 호출)
-        result = crud.create_news(db=db, title=news['title'], link=news['link'])
+        # DB 저장 (crud.py 호출)
+        result = crud.create_news(
+            db=db, 
+            title=news['title'], 
+            link=news['link'],
+            img_url=news['image_url'],
+            desc=news['desc']
+        )
         if result:
             saved_count += 1
             

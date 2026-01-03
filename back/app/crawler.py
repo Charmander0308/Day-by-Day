@@ -20,22 +20,39 @@ def get_news_data(keyword):
     # news_elements = soup.select("a.news_tit")
 
     # 다음의 선택자로 변경
-    news_elements = soup.select(".c-list-basic .item-title a")
+    news_elements = soup.select("ul.c-list-basic > li")
+    if not news_elements:
+        news_elements = soup.select("ul.list_news > li")
 
     results = []
     
     for news in news_elements[:10]:  
-        # 제목과 링크만 우선 가져오기
-        title = news.text
-        link = news["href"]
+        news_tag = news.select_one(".item-title a")
+        if not news_tag:
+            news_tag = news.select_one(".tit_main")    
 
-        title = title.strip()
-        
-        news_data = {
-            "title": title,
-            "link": link
-        }
-        results.append(news_data)
+        if news_tag:
+            title = news_tag.get_text().strip()
+            link = news_tag["href"]
+
+            img_tag = news.select_one(".thumb_img, .thumb_g, .wrap_thumb img, .c-item-content img")
+            img_url = None
+            if img_tag:
+                img_url = img_tag.get('data-original-src') or img_tag.get('src')
+
+            desc_tag = news.select_one("p.desc")
+            if not desc_tag:
+                desc_tag = news.select_one("p.desc")
+
+            desc = desc_tag.get_text().strip() if desc_tag else ""
+
+            news_data = {
+                "title": title,
+                "link": link,
+                "image_url" : img_url,
+                "desc" : desc
+            }
+            results.append(news_data)
             
     return results
 
