@@ -21,7 +21,7 @@ const requestCrawl = async () => {
   try {
     const response = await axios.post('http://127.0.0.1:8081/news/crawl');
     alert(response.data.message);
-    lastUpdated.value = new Date().toLocaleTimeString();
+    lastUpdated.value = new Date().toLocaleString();
     
     emit('refresh'); 
   } catch (error) {

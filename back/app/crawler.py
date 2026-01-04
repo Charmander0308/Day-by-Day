@@ -6,7 +6,10 @@ def get_news_data(keyword):
     # url = f"https://search.naver.com/search.naver?where=news&ie=utf8&sm=nws_hty&query={keyword}"
 
     # 네이버뉴스의 스마트 블록 UI의 동적 클래스 난독화 때문에 구조가 정형화된 다음으로 변경
-    url = f"https://search.daum.net/search?w=news&q={keyword}"
+    # 정확도순
+    # url = f"https://search.daum.net/search?w=news&q={keyword}"
+    # 최신순
+    url = f"https://search.daum.net/search?w=news&q={keyword}&DA=PGD&spacing=0&sort=recency"
 
     # 로봇이 아님을 증명하기 위한 헤더
     headers = {
@@ -36,21 +39,21 @@ def get_news_data(keyword):
             link = news_tag["href"]
 
             img_tag = news.select_one(".thumb_img, .thumb_g, .wrap_thumb img, .c-item-content img")
-            img_url = None
+            image_url = None
             if img_tag:
-                img_url = img_tag.get('data-original-src') or img_tag.get('src')
+                image_url = img_tag.get('data-original-src') or img_tag.get('src')
 
             desc_tag = news.select_one("p.desc")
             if not desc_tag:
                 desc_tag = news.select_one("p.desc")
 
-            desc = desc_tag.get_text().strip() if desc_tag else ""
+            description = desc_tag.get_text().strip() if desc_tag else ""
 
             news_data = {
                 "title": title,
                 "link": link,
-                "image_url" : img_url,
-                "desc" : desc
+                "image_url" : image_url,
+                "description" : description
             }
             results.append(news_data)
             

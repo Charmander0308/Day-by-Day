@@ -47,8 +47,8 @@ def crawl_news(keyword: str = "에듀테크", db: Session = Depends(get_db)):
             db=db, 
             title=news['title'], 
             link=news['link'],
-            img_url=news['image_url'],
-            desc=news['desc']
+            image_url=news['image_url'],
+            description=news['description']
         )
         if result:
             saved_count += 1

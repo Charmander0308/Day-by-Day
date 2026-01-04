@@ -34,7 +34,7 @@
                 </h5>
 
                 <p class="card-text text-muted mb-3 text-truncate-2" style="font-size: 0.95rem; line-height: 1.6;">
-                  {{ news.description }}
+                  {{ news.desc }}
                 </p>
 
                 <div class="text-end">

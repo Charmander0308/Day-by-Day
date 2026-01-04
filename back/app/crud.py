@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from . import models
 
 # 뉴스 데이터 추가 
-def create_news(db: Session, title: str, link: str, img_url: str, desc: str):
+def create_news(db: Session, title: str, link: str, image_url: str, description: str):
     # 중복 검사 (이미 저장된 링크인지 확인)
     # SELECT * FROM news WHERE link = ? 와 동일
     existing_news = db.query(models.News).filter(models.News.link == link).first()
@@ -15,8 +15,8 @@ def create_news(db: Session, title: str, link: str, img_url: str, desc: str):
     new_news = models.News(
         title=title,
         link=link,
-        image_url=img_url,
-        desc=desc
+        image_url=image_url,
+        description=description
     )
     
     # DB에 저장 (persist & commit)
