@@ -1,4 +1,4 @@
-import requests
+import requests, re
 from bs4 import BeautifulSoup
 
 def get_news_data(keyword):
@@ -43,11 +43,45 @@ def get_news_data(keyword):
             if img_tag:
                 image_url = img_tag.get('data-original-src') or img_tag.get('src')
 
-            desc_tag = news.select_one("p.desc")
-            if not desc_tag:
-                desc_tag = news.select_one("p.desc")
+            for useless in news.select(".screen_out, .blind, .util_view, .layer_util, .box_done"):
+                useless.decompose()
 
-            description = desc_tag.get_text().strip() if desc_tag else ""
+            desc_selectors = [
+                "p.desc",
+                "div.dsc",
+                ".item-contents",
+                ".f_eb", ".f_nb",
+                ".link_desc",
+                ".wrap_cont p",
+                ".cont_thumb .cont_text p",
+                ".txt_inline",
+                "p.txt_inline"
+            ]
+
+            description = ""
+            for sel in desc_selectors:
+                desc_tag = news.select_one(sel)
+                if desc_tag:
+                    text = desc_tag.get_text(strip=True)
+                    if text:
+                        description = text
+                        break
+
+            if not description:
+                content_area = news.select_one(".cont_thumb") or news
+                full_text = content_area.get_text(separator=" ", strip=True)
+                if title and title in full_text:
+                    description = full_text.replace(title, "").strip()
+                else:
+                    description = full_text.strip()
+
+            if description:
+                description = re.sub(r".*?개별문서메뉴.*?공유하기", "", description).strip()
+
+            # 길이 제한
+            if description and len(description) > 300:
+                description = description[:300].rstrip() + "..."
+
 
             news_data = {
                 "title": title,

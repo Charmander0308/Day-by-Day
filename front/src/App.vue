@@ -3,8 +3,9 @@
     <h1 class="text-center mb-5">📰 Day by Day</h1>
     
     <Crawler @refresh="fetchNews" />
+    <DataControls @refresh="fetchNews" />
 
-    <hr />
+    <hr class="my-4" />
 
     <NewsList :newsList="newsData" />
   </div>
@@ -13,8 +14,10 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
+
 import Crawler from './components/Crawler.vue';
 import NewsList from './components/NewsList.vue';
+import DataControls from './components/DataControls.vue';
 
 const newsData = ref([]);
 
