@@ -16,7 +16,7 @@
             </div>
             <div class="col-md-3 text-center bg-light d-flex align-items-center justify-content-center" 
                  style="min-height: 160px;" v-else>
-               <span class="text-muted small">📷 No Image</span>
+               <span class="text-muted small">No Image</span>
             </div>
 
             <div :class="news.image_url ? 'col-md-9' : 'col-md-12'">
@@ -55,7 +55,7 @@
         <li class="page-item" :class="{ disabled: currentPage === 1 }">
           <a class="page-link" href="#" @click.prevent="changePage(currentPage - 1)">이전</a>
         </li>
-        <li v-for="page in totalPages" :key="page" class="page-item" :class="{ active: currentPage === page }">
+        <li v-for="page in visiblePages" :key="page" class="page-item" :class="{ active: currentPage === page }">
           <a class="page-link" href="#" @click.prevent="changePage(page)">{{ page }}</a>
         </li>
         <li class="page-item" :class="{ disabled: currentPage === totalPages }">
@@ -75,11 +75,45 @@ const props = defineProps({
 
 const currentPage = ref(1);
 const itemsPerPage = 10;
+const maxVisibleButtons = 5;
 
 const totalPages = computed(() => Math.ceil(props.newsList.length / itemsPerPage));
 const paginatedNews = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage;
   return props.newsList.slice(start, start + itemsPerPage);
+});
+
+// 페이지 버튼 5개 계산해서 화면에 출력하는 로직
+const visiblePages = computed(() => {
+  const total = totalPages.value;
+  
+  // 전체 페이지가 5개 이하라면 그냥 다 보여줌
+  if (total <= maxVisibleButtons) {
+    return Array.from({ length: total }, (_, i) => i + 1);
+  }
+
+  // 현재 페이지를 가운데 두고 앞뒤로 계산 (ex: 현재가 10이면 8,9,10,11,12)
+  let start = currentPage.value - Math.floor(maxVisibleButtons / 2);
+  let end = start + maxVisibleButtons - 1;
+
+  // 시작이 1보다 작으면 강제로 1~5로 맞춤
+  if (start < 1) {
+    start = 1;
+    end = maxVisibleButtons;
+  }
+
+  // 끝이 전체 페이지보다 크면 뒤에서부터 5개로 맞춤 (예: 16~20)
+  if (end > total) {
+    end = total;
+    start = total - maxVisibleButtons + 1;
+  }
+
+  // 계산된 start부터 end까지 배열 생성
+  const pages = [];
+  for (let i = start; i <= end; i++) {
+    pages.push(i);
+  }
+  return pages;
 });
 
 const changePage = (page) => {

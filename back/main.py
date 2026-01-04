@@ -52,9 +52,9 @@ def read_root():
 
 # 뉴스를 긁어와서 DB에 저장하는 API
 @app.post("/news/crawl")
-def crawl_news(keyword: str = "에듀테크", db: Session = Depends(get_db)):
+def crawl_news(keyword: str = "에듀테크", limit: int = 10, sort: str = "recency", db: Session = Depends(get_db)):
     # 크롤러 가동
-    news_list = crawler.get_news_data(keyword)
+    news_list = crawler.get_news_data(keyword, limit, sort)
     news_list.reverse()
     
     saved_count = 0
@@ -71,7 +71,7 @@ def crawl_news(keyword: str = "에듀테크", db: Session = Depends(get_db)):
             saved_count += 1
             
     return {
-        "message": "크롤링 완료!", 
+        "message": f"'{keyword}' 뉴스 {len(news_list)}개 수집 완료!", 
         "total_found": len(news_list), 
         "newly_saved": saved_count
     }
